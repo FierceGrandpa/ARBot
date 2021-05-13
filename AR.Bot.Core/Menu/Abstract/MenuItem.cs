@@ -9,7 +9,7 @@ namespace AR.Bot.Core.Menu
     {
         protected readonly List<IEnumerable<InlineKeyboardButton>> Buttons = new();
 
-        protected string ItemTitle;
+        public string ItemTitle; // TODO: Remove crutch...
         protected string Command;
       
         public string Description;

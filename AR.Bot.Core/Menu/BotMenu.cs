@@ -3,8 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
+using AR.Bot.Domain;
+using AR.Bot.Repositories;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 
 // ReSharper disable once CheckNamespace
 namespace AR.Bot.Core.Menu
@@ -13,21 +16,21 @@ namespace AR.Bot.Core.Menu
     {
         private readonly ImmutableHashSet<Type> _availableMenus;
         private readonly ITelegramBotClient _client;
+        private readonly IRepository<Category> _categoryRepository;
 
-        public BotMenu(ITelegramBotClient client)
+        public BotMenu(ITelegramBotClient client, IRepository<Category> categoryRepository)
         {
             _client = client;
+            _categoryRepository = categoryRepository;
 
             // TODO: good?
             _availableMenus = new HashSet<Type>
             {
                 // Activities
                 typeof(GetActivityMenu),
-                typeof(SelectCategoryMenu),
                 // Settings
                 typeof(SendingTimeModeMenu),
                 // Change Menu
-                typeof(SelectMenu),
                 typeof(ApplyMenu),
                 // MainMenu
                 typeof(MainMenu),
@@ -53,6 +56,7 @@ namespace AR.Bot.Core.Menu
 
         private MenuItem GetMenuItem(Type menuType, IEnumerable arguments)
         {
+            // TODO: Remove crutch...
             if (_availableMenus.Contains(menuType))
                 return (MenuItem)Activator.CreateInstance(menuType, arguments);
 

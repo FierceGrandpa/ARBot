@@ -4,7 +4,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 // ReSharper disable once CheckNamespace
 namespace AR.Bot.Core.Menu
 {
-    internal class ApplyMenu : MenuItem
+    public class ApplyMenu : MenuItem
     {
         public ApplyMenu(IReadOnlyList<string> arguments)
         {
