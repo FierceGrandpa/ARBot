@@ -44,7 +44,7 @@ namespace AR.Bot.Core.Menu
 
         public async Task SendMainMenu(long chatId)
         {
-            var menu = new MainMenu(null, null);
+            var menu = new MainMenu(null);
             await _client.SendTextMessageAsync(chatId, menu.Description,
                 ParseMode.Markdown,
                 replyMarkup: menu.GenerateMarkup());
@@ -71,7 +71,7 @@ namespace AR.Bot.Core.Menu
 
                 if (menuType == typeof(GetActivityMenu))
                 {
-                    return new GetActivityMenu((IReadOnlyList<string>)arguments, null);
+                    return new GetActivityMenu((IReadOnlyList<string>)arguments);
                 }
 
                 if (menuType == typeof(SendingTimeModeMenu))
@@ -91,7 +91,7 @@ namespace AR.Bot.Core.Menu
 
                 if (menuType == typeof(MainMenu))
                 {
-                    return new MainMenu((IReadOnlyList<string>)arguments, null);
+                    return new MainMenu((IReadOnlyList<string>)arguments);
                 }
             }
                

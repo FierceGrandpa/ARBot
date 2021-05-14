@@ -10,6 +10,6 @@ namespace AR.Bot.Domain
         public string Title  { get; set; }
         public bool   Status { get; set; }
 
-        public ICollection<Skill> Skills { get; set; }
+        public virtual ICollection<Skill> Skills { get; set; }
     }
 }

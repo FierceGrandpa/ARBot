@@ -22,6 +22,6 @@ namespace AR.Bot.Domain
         public MailTime MailingTime { get; set; }
         public SendingTimeMode MailingMode { get; set; }
 
-        public ICollection<SentActivity> SentActivities { get; set; }
+        public virtual ICollection<SentActivity> SentActivities { get; set; }
     }
 }

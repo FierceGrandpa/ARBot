@@ -10,6 +10,7 @@ namespace AR.Bot.Core.Data
 
         public DbSet<TelegramUser> Users { get; set; }
 
+        public DbSet<ActivitySkill> ActivitySkill { get; set; }
         public DbSet<SentActivity> SentActivities { get; set; }
 
         public DbSet<Activity> Activities { get; set; }
@@ -34,19 +35,38 @@ namespace AR.Bot.Core.Data
                 entity.ToTable("TelegramUsers");
             });
 
+            modelBuilder
+                .Entity<Activity>()
+                .HasMany(a => a.Skills)
+                .WithMany(s => s.Activities)
+                .UsingEntity<ActivitySkill>(
+                    j => j
+                        .HasOne(pt => pt.Skill)
+                        .WithMany(p => p.ActivitySkills)
+                        .HasForeignKey(pt => pt.SkillId),
+                    j => j
+                        .HasOne(pt => pt.Activity)
+                        .WithMany(t => t.ActivitySkills)
+                        .HasForeignKey(pt => pt.ActivityId),
+                    j =>
+                    {
+                        j.Property(pt => pt.ChangeDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        j.Property(pt => pt.Offset).HasDefaultValue(1);
+                        j.HasKey(t => new { t.ActivityId, t.SkillId });
+                        j.ToTable("ActivitySkill");
+                    }
+                );
+
+
             modelBuilder.Entity<Activity>(entity =>
             {
                 entity.HasKey(e => e.Id);
-
-                entity
-                    .HasMany(e => e.Skills)
-                    .WithMany(e => e.Activities)
-                    .UsingEntity(e => e.ToTable("ActivitySkill"));
-
+                
                 entity.HasMany(e => e.SentActivities);
 
                 entity.ToTable("Activities");
             });
+
             modelBuilder.Entity<Category>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -62,12 +82,7 @@ namespace AR.Bot.Core.Data
                 entity.HasKey(e => e.Id);
 
                 entity.HasOne(e => e.Category);
-
-                entity
-                    .HasMany(e => e.Activities)
-                    .WithMany(e => e.Skills)
-                    .UsingEntity(e => e.ToTable("ActivitySkill"));
-
+                
                 entity.ToTable("Skills");
             });
 

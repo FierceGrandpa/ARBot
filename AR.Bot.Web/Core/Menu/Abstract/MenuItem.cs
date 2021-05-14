@@ -24,26 +24,6 @@ namespace AR.Bot.Core.Menu
                 }
             });
 
-        protected void GenerateButtons(IEnumerable<Type> menuItems)
-        {
-            foreach (var menuItem in menuItems)
-            {
-                var item = (MenuItem)Activator.CreateInstance(menuItem, new object[] { null });
-                // TODO: Exception
-                if (item != null)
-                {
-                    Buttons.Add(new List<InlineKeyboardButton>
-                    {
-                        new()
-                        {
-                            Text = item.ItemTitle,
-                            CallbackData = $"switch {item.GetType()}"
-                        }
-                    });
-                }
-            }
-        }
-
         public InlineKeyboardMarkup GenerateMarkup()
         {
             GenerateButtons();

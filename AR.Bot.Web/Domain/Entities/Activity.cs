@@ -20,7 +20,8 @@ namespace AR.Bot.Domain
         public int    MaxAge      { get; set; }
         public int    MinAge      { get; set; }
 
-        public ICollection<Skill> Skills { get; set; }
-        public ICollection<SentActivity> SentActivities { get; set; }
+        public virtual ICollection<Skill> Skills { get; set; }
+        public virtual ICollection<SentActivity> SentActivities { get; set; }
+        public virtual ICollection<ActivitySkill> ActivitySkills { get; set; }
     }
 }

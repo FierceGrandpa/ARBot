@@ -11,16 +11,12 @@ namespace AR.Bot.Core.Menu
 {
     public class GetActivityMenu : MenuItem
     {
-        private readonly IRepository<Category> _categoriesRepository;
-
-        public GetActivityMenu(IReadOnlyList<string> arguments, IRepository<Category> categoriesRepository)
+        public GetActivityMenu(IReadOnlyList<string> arguments)
         {
             ItemTitle = "Получить активность!";
             Description = "*Вы можете получить рандомную активность или выбрать категорию, по которой вам выдадут рандомную активность*";
 
             Command = nameof(Setting.MailingMode).ToLowerInvariant();
-
-            _categoriesRepository = categoriesRepository;
         }
 
         protected override void GenerateButtons()

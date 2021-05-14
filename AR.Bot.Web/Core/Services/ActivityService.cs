@@ -50,9 +50,12 @@ namespace AR.Bot.Core.Services
 
             static bool Active(Activity e) => e.Status;
 
-            bool NotUsed(Activity activity) => _dailyParcelService.GetWithInclude(UsedByUser, e=> e.TelegramUser, e=> e.Activity).All(e => activity.Id != e.ActivityId);
+            bool NotUsed(Activity activity) => _dailyParcelService
+                .GetWithInclude(UsedByUser, e=> e.TelegramUser, e=> e.Activity)
+                .All(e => activity.Id != e.ActivityId);
 
-            var activities = _activitiesRepository.GetWithInclude(e=> Active(e) && NotUsed(e), e=> e.SentActivities, e=> e.Skills);
+            var activities = _activitiesRepository.GetWithInclude(e=> Active(e) && NotUsed(e),
+                e=> e.SentActivities, e=> e.Skills);
 
             // TODO: Now Activities Can Be Null - This Bad? Make Log and...
 
@@ -101,11 +104,13 @@ namespace AR.Bot.Core.Services
                 return null;
             }
             // TODO: Refactor
-            var skillsByCategory = _skillsRepository.GetWithInclude(e => e.Status && e.CategoryId == categoryId, e => e.Activities, e => e.Category);
+            var skillsByCategory = _skillsRepository.GetWithInclude(
+                e => e.Status && e.CategoryId == categoryId, e => e.Activities, e => e.Category);
 
             // TODO: Optimize and MAKE OUT MAGIC, WOW!
             var enumerable = activities as Activity[] ?? activities.ToArray();
-            var activity = enumerable.Where(e => e.Skills.Any(o => skillsByCategory.Any(s => s.Id == o.Id))).ElementAt(_random.Next(enumerable.Length));
+            var activity = enumerable.Where(e => e.Skills.Any(o => 
+                skillsByCategory.Any(s => s.Id == o.Id))).ElementAt(_random.Next(enumerable.Length));
 
             await _dailyParcelService.AddAsync(new SentActivity(userId, activity.Id));
             await _unitOfWork.SaveChangesAsync();

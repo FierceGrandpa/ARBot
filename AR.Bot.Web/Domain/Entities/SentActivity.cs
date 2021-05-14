@@ -38,7 +38,7 @@ namespace AR.Bot.Domain
 
         #region DateTime
 
-        public DateTime SentDate { get; set; } = DateTime.UtcNow.AddHours(3); // TODO: Refactor
+        public DateTime SentDate { get; set; }
 
         #endregion
     }

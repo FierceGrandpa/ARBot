@@ -25,19 +25,16 @@ namespace AR.Bot.Core.Services
         private readonly string _botUsername;
         private readonly ITelegramBotClient _client;
         private readonly SettingsProcessor _settingsProcessor;
-        private readonly MessageValidator _validator;
         private readonly IActivityService _activityService;
         private readonly ITelegramUserRepository _userRepository;
 
         public MessageHandler(ITelegramBotClient client, BotMenu botMenu,
-            MessageValidator validator, 
             SettingsProcessor settingsProcessor, 
             IActivityService activityService,
             ITelegramUserRepository userRepository)
         {
             _client            = client;
             _botMenu           = botMenu;
-            _validator         = validator;
             _settingsProcessor = settingsProcessor;
 
             _activityService = activityService;

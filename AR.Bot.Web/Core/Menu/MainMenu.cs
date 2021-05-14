@@ -11,15 +11,11 @@ namespace AR.Bot.Core.Menu
     {
         private readonly List<Type> _mainMenuItems;
 
-        private readonly IRepository<Category> _categoriesRepository;
-
         // TODO: Remove crutch...
-        public MainMenu(IReadOnlyList<string> arguments, IRepository<Category> categoriesRepository)
+        public MainMenu(IReadOnlyList<string> arguments)
         {
             Description = "Вы можете настроить время рассылки или получить активность";
             ItemTitle = "Главное Меню";
-
-            _categoriesRepository = categoriesRepository;
 
             _mainMenuItems = new List<Type>
             {
@@ -32,7 +28,7 @@ namespace AR.Bot.Core.Menu
         protected override void GenerateButtons()
         {
             // TODO: Remove crutch...
-            var a = new GetActivityMenu(null, null);
+            var a = new GetActivityMenu(null);
             var c = new SendingTimeModeMenu(null);
       
             Buttons.Add(new List<InlineKeyboardButton>

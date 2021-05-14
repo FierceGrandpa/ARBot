@@ -29,8 +29,7 @@ namespace AR.Bot.Web
             }
             catch (Exception e)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"ERROR: {e.Message}");
+                Console.WriteLine($": {e.Message}");
             }
         }
 

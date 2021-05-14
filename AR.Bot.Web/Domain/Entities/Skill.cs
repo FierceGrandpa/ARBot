@@ -20,6 +20,7 @@ namespace AR.Bot.Domain
 
         #endregion
         
-        public ICollection<Activity> Activities { get; set; }
+        public virtual ICollection<Activity> Activities { get; set; }
+        public virtual ICollection<ActivitySkill> ActivitySkills { get; set; }
     }
 }

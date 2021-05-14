@@ -3,7 +3,6 @@ using AR.Bot.Core.Menu;
 using AR.Bot.Core.Services;
 using AR.Bot.Domain;
 using AR.Bot.Repositories;
-using AR.Bot.Web.Validation;
 using Flurl;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +16,6 @@ namespace AR.Bot
     {
         public static IServiceCollection AddMessageProcessors(this IServiceCollection services)
         {
-            services.AddTransient<MessageValidator>();
             services.AddTransient<SettingsProcessor>();
 
             return services;
