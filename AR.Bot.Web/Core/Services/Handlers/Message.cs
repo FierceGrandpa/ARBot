@@ -95,16 +95,9 @@ namespace AR.Bot.Core.Services
 
         private async Task HandlePrivateMessage(Message message)
         {
-            if (message.Text.StartsWith("action:", StringComparison.InvariantCulture))
-            {
-                Log.Information("Message by {ChatId} | {From} is a action", message.Chat.Id, message.From);
-                await HandleSelect(message);
-                return;
-            }
-
             if (message.Text.StartsWith("select:", StringComparison.InvariantCulture))
             {
-                Log.Information("Message by {ChatId} | {From} is a action", message.Chat.Id, message.From);
+                Log.Information("Message by {ChatId} | {From} is a select", message.Chat.Id, message.From);
                 await HandleSelect(message);
                 return;
             }
@@ -118,43 +111,9 @@ namespace AR.Bot.Core.Services
             await _botMenu.SendMainMenu(message.Chat.Id);
         }
 
-        private async Task HandleAction(Message message)
-        {
-            var tinyString = message.Text.Replace("action:", "");
-            var splitString = tinyString.Split('=');
-
-            var (param, value) = (splitString[0], splitString[1]);
-
-            switch (param)
-            {
-                case "getRandomActivity":
-                    var user = await _userRepository.GetOrCreate(message.Chat.Id);
-                    // TODO: Check on null?
-                    var activity = await _activityService.GetRandomActivity(user.Id);
-                    if (activity == null)
-                    {
-                        await _client.SendTextMessageAsync(message.Chat.Id, "<b>Активности на сегодня закончились :(\nПриходите завтра</b>", replyToMessageId: message.MessageId);
-                    }
-                    else
-                    {
-                        var activityName = $"Активность: <b>{activity.Title}</b>\n";
-                        var description = $"\n{activity.Description}\n\n";
-                        var age = $"Возраст: {activity.MinAge}-{activity.MaxAge}\n";
-                        var skills = $"Развивает: {string.Join(',', activity.Skills.Select(e => e.Title))}\n"; // TODO: Ext
-
-                        await _client.SendTextMessageAsync(message.Chat.Id, 
-                            $"{activityName}{age}{skills}{description}", 
-                            replyToMessageId: message.MessageId,
-                            parseMode: ParseMode.Html);
-                    }
-
-                    break;
-            }
-        }
-
         private async Task HandleSelect(Message message)
         {
-            var tinyString = message.Text.Replace($"@{_botUsername} select:", "");
+            var tinyString = message.Text.Replace($"select:", "");
             var splitString = tinyString.Split('=');
 
             var (param, value) = (splitString[0], splitString[1]);
@@ -180,7 +139,7 @@ namespace AR.Bot.Core.Services
 
         private async Task HandleSettingChanging(Message message)
         {
-            var tinyString = message.Text.Replace($"@{_botUsername} set:", "");
+            var tinyString = message.Text.Replace("set:", "");
             var splitString = tinyString.Split('=');
 
             var (param, value) = (splitString[0], splitString[1]);
@@ -242,9 +201,6 @@ namespace AR.Bot.Core.Services
             {
                 switch (command)
                 {
-                    // Group Chat
-
-                    // Private Chat
                     case "start":
                     case "settings": 
                         await _botMenu.SendMainMenu(message.Chat.Id); 

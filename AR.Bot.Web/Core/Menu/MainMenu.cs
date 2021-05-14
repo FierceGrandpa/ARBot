@@ -11,15 +11,19 @@ namespace AR.Bot.Core.Menu
     {
         private readonly List<Type> _mainMenuItems;
 
+        private readonly IRepository<Category> _categoriesRepository;
+
         // TODO: Remove crutch...
-        public MainMenu(IReadOnlyList<string> arguments)
+        public MainMenu(IReadOnlyList<string> arguments, IRepository<Category> categoriesRepository)
         {
             Description = "Вы можете настроить время рассылки или получить активность";
             ItemTitle = "Главное Меню";
-            
+
+            _categoriesRepository = categoriesRepository;
+
             _mainMenuItems = new List<Type>
             {
-                // typeof(SelectCategoryMenu), // TODO: Remove crutch...
+                typeof(SelectCategoryMenu), // TODO: Remove crutch...
                 typeof(SendingTimeModeMenu),
                 typeof(GetActivityMenu)
             };
@@ -28,22 +32,26 @@ namespace AR.Bot.Core.Menu
         protected override void GenerateButtons()
         {
             // TODO: Remove crutch...
-            foreach (var menuItem in _mainMenuItems)
+            var a = new GetActivityMenu(null, null);
+            var c = new SendingTimeModeMenu(null);
+      
+            Buttons.Add(new List<InlineKeyboardButton>
             {
-                var item = (MenuItem)Activator.CreateInstance(menuItem, new object[] { null });
-                // TODO: Exception
-                if (item != null)
+                new()
                 {
-                    Buttons.Add(new List<InlineKeyboardButton>
-                    {
-                        new()
-                        {
-                            Text = item.ItemTitle,
-                            CallbackData = $"switch {item.GetType()}"
-                        }
-                    });
+                    Text = a.ItemTitle,
+                    CallbackData = $"switch {a.GetType()}"
                 }
-            }
+            });
+            
+            Buttons.Add(new List<InlineKeyboardButton>
+            {
+                new()
+                {
+                    Text = c.ItemTitle,
+                    CallbackData = $"switch {c.GetType()}"
+                }
+            });
         }
     }
 }

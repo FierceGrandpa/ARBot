@@ -52,7 +52,7 @@ namespace AR.Bot.Core.Services
 
             bool NotUsed(Activity activity) => _dailyParcelService.GetWithInclude(UsedByUser, e=> e.TelegramUser, e=> e.Activity).All(e => activity.Id != e.ActivityId);
 
-            var activities = _activitiesRepository.GetWithInclude(e=> Active(e) && NotUsed(e), e=> e.TelegramUsers, e=> e.Skills);
+            var activities = _activitiesRepository.GetWithInclude(e=> Active(e) && NotUsed(e), e=> e.SentActivities, e=> e.Skills);
 
             // TODO: Now Activities Can Be Null - This Bad? Make Log and...
 

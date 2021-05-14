@@ -9,7 +9,7 @@ namespace AR.Bot.Domain
         {
             Skills = new HashSet<Skill>();
 
-            TelegramUsers = new HashSet<TelegramUser>();
+            SentActivities = new HashSet<SentActivity>();
         }
         
         public string Title       { get; set; }
@@ -21,6 +21,6 @@ namespace AR.Bot.Domain
         public int    MinAge      { get; set; }
 
         public ICollection<Skill> Skills { get; set; }
-        public ICollection<TelegramUser> TelegramUsers { get; set; }
+        public ICollection<SentActivity> SentActivities { get; set; }
     }
 }

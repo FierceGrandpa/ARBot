@@ -4,8 +4,10 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using AR.Bot.Core.Menu;
+using AR.Bot.Repositories;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 // ReSharper disable once CheckNamespace
 namespace AR.Bot.Core.Services
@@ -19,19 +21,30 @@ namespace AR.Bot.Core.Services
     {
         private readonly BotMenu _botMenu;
         private readonly ITelegramBotClient _client;
+        private readonly IActivityService _activityService;
+        private readonly ITelegramUserRepository _userRepository;
 
         // TODO: Good
         // Now: Key is command, value means is command require arguments
         private readonly ImmutableDictionary<string, bool> _supportedCommands;
 
-        public CallbackQueryHandler(BotMenu botMenu, ITelegramBotClient client)
+        public CallbackQueryHandler(
+            BotMenu botMenu, 
+            ITelegramBotClient client,
+            IActivityService activityService,
+            ITelegramUserRepository userRepository)
         {
             _botMenu = botMenu;
             _client  = client;
 
+            _activityService = activityService;
+
+            _userRepository = userRepository;
+
             _supportedCommands = new Dictionary<string, bool>
             {
                 {"switch", true},
+                {"action", true},
             }.ToImmutableDictionary();
         }
 
@@ -61,6 +74,33 @@ namespace AR.Bot.Core.Services
                     await _botMenu.SwitchMenu(menuType, args.Skip(1).ToArray(),
                         callbackQuery.Message.Chat.Id,
                         callbackQuery.Message.MessageId);
+                    break;
+                case "action" when args != null: // TODO: good?
+                    switch (args.First())
+                    {
+                        case "getRandomActivity":
+                            var user = await _userRepository.GetOrCreate(callbackQuery.Message.Chat.Id);
+                            // TODO: Check on null?
+                            var activity = await _activityService.GetRandomActivity(user.Id);
+                            if (activity == null)
+                            {
+                                await _client.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "<b>Активности на сегодня закончились :(\nПриходите завтра</b>", replyToMessageId: callbackQuery.Message.MessageId);
+                            }
+                            else
+                            {
+                                var activityName = $"Активность: <b>{activity.Title}</b>\n";
+                                var description = $"\n{activity.Description}\n\n";
+                                var age = $"Возраст: {activity.MinAge}-{activity.MaxAge}\n";
+                                var skills = $"Развивает: {string.Join(',', activity.Skills.Select(e => e.Title))}\n"; // TODO: Ext
+
+                                await _client.SendTextMessageAsync(callbackQuery.Message.Chat.Id,
+                                    $"{activityName}{age}{skills}{description}",
+                                    replyToMessageId: callbackQuery.Message.MessageId,
+                                    parseMode: ParseMode.Html);
+                            }
+
+                            break;
+                    }
                     break;
             }
 

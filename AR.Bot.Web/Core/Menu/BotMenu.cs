@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Threading.Tasks;
 using AR.Bot.Domain;
 using AR.Bot.Repositories;
@@ -16,21 +17,24 @@ namespace AR.Bot.Core.Menu
     {
         private readonly ImmutableHashSet<Type> _availableMenus;
         private readonly ITelegramBotClient _client;
-        private readonly IRepository<Category> _categoryRepository;
 
-        public BotMenu(ITelegramBotClient client, IRepository<Category> categoryRepository)
+        private readonly IRepository<Category> _categoriesRepository;
+        public BotMenu(ITelegramBotClient client, IRepository<Category> categoriesRepository)
         {
             _client = client;
-            _categoryRepository = categoryRepository;
+
+            _categoriesRepository = categoriesRepository ?? throw new ArgumentNullException(nameof(categoriesRepository));
 
             // TODO: good?
             _availableMenus = new HashSet<Type>
             {
                 // Activities
+                typeof(SelectCategoryMenu),
                 typeof(GetActivityMenu),
                 // Settings
                 typeof(SendingTimeModeMenu),
                 // Change Menu
+                typeof(SelectMenu),
                 typeof(ApplyMenu),
                 // MainMenu
                 typeof(MainMenu),
@@ -40,7 +44,7 @@ namespace AR.Bot.Core.Menu
 
         public async Task SendMainMenu(long chatId)
         {
-            var menu = new MainMenu(null);
+            var menu = new MainMenu(null, null);
             await _client.SendTextMessageAsync(chatId, menu.Description,
                 ParseMode.Markdown,
                 replyMarkup: menu.GenerateMarkup());
@@ -49,6 +53,7 @@ namespace AR.Bot.Core.Menu
         public async Task SwitchMenu(Type menuType, string[] arguments, long chatId, int messageId)
         {
             var item = GetMenuItem(menuType, arguments);
+
             await _client.EditMessageTextAsync(chatId, messageId, item.Description,
                 ParseMode.Markdown,
                 replyMarkup: item.GenerateMarkup());
@@ -58,7 +63,38 @@ namespace AR.Bot.Core.Menu
         {
             // TODO: Remove crutch...
             if (_availableMenus.Contains(menuType))
-                return (MenuItem)Activator.CreateInstance(menuType, arguments);
+            {
+                if (menuType == typeof(SelectCategoryMenu))
+                {
+                    return new SelectCategoryMenu((IReadOnlyList<string>)arguments, _categoriesRepository);
+                }
+
+                if (menuType == typeof(GetActivityMenu))
+                {
+                    return new GetActivityMenu((IReadOnlyList<string>)arguments, null);
+                }
+
+                if (menuType == typeof(SendingTimeModeMenu))
+                {
+                    return new SendingTimeModeMenu((IReadOnlyList<string>)arguments);
+                }
+
+                if (menuType == typeof(ApplyMenu))
+                {
+                    return new ApplyMenu((IReadOnlyList<string>)arguments);
+                }
+
+                if (menuType == typeof(SelectMenu))
+                {
+                    return new ApplyMenu((IReadOnlyList<string>)arguments);
+                }
+
+                if (menuType == typeof(MainMenu))
+                {
+                    return new MainMenu((IReadOnlyList<string>)arguments, null);
+                }
+            }
+               
 
             throw new UnsupportedMenuItem(menuType.ToString());
         }

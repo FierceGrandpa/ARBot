@@ -3,17 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31129.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AR.Bot.Domain", "AR.Bot.Domain\AR.Bot.Domain.csproj", "{58097BBB-63FD-4BF7-ABD5-CBE8E0FB005F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bot", "Bot", "{88113474-9496-4409-AEDA-CB54DE917ECE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8456CBCA-AAA0-4AD2-B7B7-EF055368E60A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0B3C4C1C-58BB-48C9-96DD-48FF66FB4521}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AR.Bot.Core", "AR.Bot.Core\AR.Bot.Core.csproj", "{C2BC7909-9119-458B-9F1F-C5937CE4B2DC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AR.Bot.Web", "AR.Bot.Web\AR.Bot.Web.csproj", "{EA313E06-BE64-4C97-A83F-EE09DAA4761D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AR.Bot", "AR.Bot.Web\AR.Bot.csproj", "{EA313E06-BE64-4C97-A83F-EE09DAA4761D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,14 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{58097BBB-63FD-4BF7-ABD5-CBE8E0FB005F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{58097BBB-63FD-4BF7-ABD5-CBE8E0FB005F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{58097BBB-63FD-4BF7-ABD5-CBE8E0FB005F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{58097BBB-63FD-4BF7-ABD5-CBE8E0FB005F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C2BC7909-9119-458B-9F1F-C5937CE4B2DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C2BC7909-9119-458B-9F1F-C5937CE4B2DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C2BC7909-9119-458B-9F1F-C5937CE4B2DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C2BC7909-9119-458B-9F1F-C5937CE4B2DC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EA313E06-BE64-4C97-A83F-EE09DAA4761D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EA313E06-BE64-4C97-A83F-EE09DAA4761D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA313E06-BE64-4C97-A83F-EE09DAA4761D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -38,10 +26,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{58097BBB-63FD-4BF7-ABD5-CBE8E0FB005F} = {8456CBCA-AAA0-4AD2-B7B7-EF055368E60A}
 		{8456CBCA-AAA0-4AD2-B7B7-EF055368E60A} = {88113474-9496-4409-AEDA-CB54DE917ECE}
 		{0B3C4C1C-58BB-48C9-96DD-48FF66FB4521} = {88113474-9496-4409-AEDA-CB54DE917ECE}
-		{C2BC7909-9119-458B-9F1F-C5937CE4B2DC} = {8456CBCA-AAA0-4AD2-B7B7-EF055368E60A}
 		{EA313E06-BE64-4C97-A83F-EE09DAA4761D} = {8456CBCA-AAA0-4AD2-B7B7-EF055368E60A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

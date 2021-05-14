@@ -1,21 +1,27 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 // ReSharper disable once CheckNamespace
 namespace AR.Bot.Domain
 {
     public class SentActivity
     {
-        public SentActivity(Guid userId, Guid activityId)
+        public SentActivity()
         {
-            TelegramUserId = userId;
-            ActivityId = activityId;
             // TODO: Replace with Ext
             SentDate = DateTime.UtcNow.AddHours(3);
         }
 
-        #region Activity
+        public SentActivity(Guid userId, Guid activityId) : this()
+        {
+            TelegramUserId = userId;
+            ActivityId = activityId;
+        }
 
+        #region Activity
+        
         public Guid ActivityId { get; set; }
         [ForeignKey(nameof(ActivityId))]
         public Activity Activity { get; set; }
@@ -23,7 +29,7 @@ namespace AR.Bot.Domain
         #endregion
 
         #region TelegramUser
-
+        
         public Guid TelegramUserId { get; set; }
         [ForeignKey(nameof(TelegramUserId))]
         public TelegramUser TelegramUser { get; set; }

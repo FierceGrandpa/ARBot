@@ -1,5 +1,6 @@
 ﻿using AR.Bot.Domain;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace AR.Bot.Core.Data
 {
@@ -23,11 +24,12 @@ namespace AR.Bot.Core.Data
 
                 entity
                     .Property(e => e.MailingTime)
+                    .HasConversion(
+                        e => JsonConvert.SerializeObject(e),
+                        e => JsonConvert.DeserializeObject<MailTime>(e))
                     .HasDefaultValue(new MailTime(12, 00));
 
-                entity
-                    .HasMany(e => e.Activities)
-                    .WithMany(e => e.TelegramUsers);
+                entity.HasMany(e => e.SentActivities);
 
                 entity.ToTable("TelegramUsers");
             });
@@ -38,11 +40,10 @@ namespace AR.Bot.Core.Data
 
                 entity
                     .HasMany(e => e.Skills)
-                    .WithMany(e => e.Activities);
+                    .WithMany(e => e.Activities)
+                    .UsingEntity(e => e.ToTable("ActivitySkill"));
 
-                entity
-                    .HasMany(e => e.TelegramUsers)
-                    .WithMany(e => e.Activities);
+                entity.HasMany(e => e.SentActivities);
 
                 entity.ToTable("Activities");
             });
@@ -64,18 +65,25 @@ namespace AR.Bot.Core.Data
 
                 entity
                     .HasMany(e => e.Activities)
-                    .WithMany(e => e.Skills);
-                
+                    .WithMany(e => e.Skills)
+                    .UsingEntity(e => e.ToTable("ActivitySkill"));
+
                 entity.ToTable("Skills");
             });
 
             modelBuilder.Entity<SentActivity>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(t => new { t.ActivityId, t.TelegramUserId });
 
-                entity.HasOne(e => e.Activity);
+                entity
+                    .HasOne(e => e.Activity)
+                    .WithMany(p => p.SentActivities)
+                    .HasForeignKey(pt => pt.ActivityId);
 
-                entity.HasOne(e => e.TelegramUser);
+                entity
+                    .HasOne(e => e.TelegramUser)
+                    .WithMany(p => p.SentActivities)
+                    .HasForeignKey(pt => pt.TelegramUserId);
                 
                 entity.ToTable("SentActivities");
             });

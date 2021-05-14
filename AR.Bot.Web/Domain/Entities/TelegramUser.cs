@@ -5,7 +5,7 @@ namespace AR.Bot.Domain
 {
     public class TelegramUser : EntityBase
     {
-        public TelegramUser() => Activities = new HashSet<Activity>();
+        public TelegramUser() => SentActivities = new HashSet<SentActivity>();
 
         public TelegramUser(long chatId) : this()
         {
@@ -22,6 +22,6 @@ namespace AR.Bot.Domain
         public MailTime MailingTime { get; set; }
         public SendingTimeMode MailingMode { get; set; }
 
-        public ICollection<Activity> Activities { get; set; }
+        public ICollection<SentActivity> SentActivities { get; set; }
     }
 }
