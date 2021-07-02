@@ -19,7 +19,6 @@ namespace AR.Bot.Core.Services
 
     public class ActivityService : IActivityService
     {
-        // TODO: Make Protected Random Generator
         private readonly SecureRandomGenerator _random = new();
 
         // TODO: Good...
