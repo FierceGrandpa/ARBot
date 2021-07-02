@@ -1,17 +1,20 @@
 ﻿// ReSharper disable once CheckNamespace
+
+using System;
+
 namespace AR.Bot.Domain
 {
+    [Flags]
     public enum SendingTimeMode
     {
         // 9:00
-        Morning,
+        Morning = 1,
         // 12:00
-        Default,
+        Default = 2,
         // 15:00
-        Lunch,
+        Lunch = 4,
         // 19:00
-        Evening,
-        // TODO: Is Good?
-        Custom
+        Evening = 8,
+        Custom = 0
     }
 }
