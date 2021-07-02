@@ -30,9 +30,9 @@ namespace AR.Bot.Repositories
 
         public IEnumerable<SentActivity> GetTodayParcel()
         {
-            var currentDate = DateTime.Now.ToMoscowTime().ToShortDateString();
+            var currentDate = DateTime.Now.ToMoscowTime();
 
-            return GetWithInclude(e => e.SentDate.ToShortDateString() == currentDate); // TODO: May be without Convert...?
+            return GetWithInclude(e => e.SentDate.CompareTo(currentDate) == 0);
         }
     }
 }
