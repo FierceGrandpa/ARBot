@@ -10,8 +10,7 @@ namespace AR.Bot.Domain
     {
         public SentActivity()
         {
-            // TODO: Replace with Ext
-            SentDate = DateTime.UtcNow.AddHours(3);
+            SentDate = DateTime.Now.ToMoscowTime();
         }
 
         public SentActivity(Guid userId, Guid activityId) : this()
