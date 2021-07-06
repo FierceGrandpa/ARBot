@@ -22,7 +22,7 @@ namespace AR.Bot.Core.Commands
         private readonly IActivityService _activityService;
         private readonly ITelegramUserRepository _userRepository;
 
-        public SwitchCommand(string name, IEnumerable<string> args, bool isRequiredArgs,
+        public SwitchCommand(string name, bool isRequiredArgs,
             BotMenu botMenu,
             ITelegramBotClient client,
             IActivityService activityService,
@@ -39,6 +39,8 @@ namespace AR.Bot.Core.Commands
 
         public async Task<CommandExecutionResult> Execute(CallbackQuery callbackQuery, params string[] args)
         {
+            if (IsRequiredArgs && args == null) throw new InvalidOperationException();
+            
             var menuType = Type.GetType(args[0]);
             await _botMenu.SwitchMenu(menuType, args.Skip(1).ToArray(),
                 callbackQuery.Message.Chat.Id,

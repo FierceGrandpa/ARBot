@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AR.Bot.Core.Menu;
@@ -37,6 +38,8 @@ namespace AR.Bot.Core.Commands
 
         public async Task<CommandExecutionResult> Execute(CallbackQuery callbackQuery, params string[] args)
         {
+            if (IsRequiredArgs && args == null) throw new InvalidOperationException();
+
             switch (args.First())
             {
                 case "getRandomActivity":
