@@ -17,7 +17,7 @@ namespace AR.Bot.Domain
         public long ChatId { get; set; }
 
         // TODO: Enum
-        public bool SubscribeStatus { get; set; }
+        public SubscribeStatus SubscribeStatus { get; set; }
         // TODO: Telegram User Model
         public MailTime MailingTime { get; set; }
         public SendingTimeMode MailingMode { get; set; }

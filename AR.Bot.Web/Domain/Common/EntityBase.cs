@@ -9,9 +9,7 @@
         protected EntityBase()
         {
             Id = Guid.NewGuid();
-
-            // TODO: Refactor
-            DateAdded = DateTime.UtcNow.AddHours(3);
+            DateAdded = DateTime.UtcNow.ToMoscowTime();
         }
 
         [Key]

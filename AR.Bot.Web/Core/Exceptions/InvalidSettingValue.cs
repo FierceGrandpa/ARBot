@@ -5,6 +5,9 @@ namespace AR.Bot
 {
     public class InvalidSettingValueException : Exception
     {
-        // TODO?
+        public InvalidSettingValueException(string value) : base(value)
+        {
+            
+        }
     }
 }

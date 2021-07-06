@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AR.Bot.Domain;
 using AR.Bot.Repositories;
+using AR.Bot.Web.Core.Utils;
 
 // ReSharper disable once CheckNamespace
 namespace AR.Bot.Core.Services
@@ -18,8 +19,7 @@ namespace AR.Bot.Core.Services
 
     public class ActivityService : IActivityService
     {
-        // TODO: Make Protected Random Generator
-        private readonly Random _random = new(DateTime.Now.Millisecond);
+        private readonly SecureRandomGenerator _random = new();
 
         // TODO: Good...
         private const int MaxActivities = 3;
@@ -64,18 +64,15 @@ namespace AR.Bot.Core.Services
 
         public async Task<Activity> GetRandomActivity(Guid userId)
         {
-            // TODO: This Bad?
             if (_dailyParcelService.GetTodayParcel(userId).Count() >= MaxActivities)
             {
-                // TODO: This Bad?
-                return null;
+                throw new RandomActivityException();
             }
 
             var activities = GetUnusedActivities(userId);
             if (activities == null)
             {
-                // TODO: This Bad...
-                return null;
+                throw new RandomActivityException();
             }
 
             // TODO: Optimize and MAKE OUT MAGIC, WOW!

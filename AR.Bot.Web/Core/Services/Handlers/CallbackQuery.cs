@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
+using AR.Bot.Core.Commands;
 using AR.Bot.Core.Menu;
+using AR.Bot.Domain;
 using AR.Bot.Repositories;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -26,26 +28,30 @@ namespace AR.Bot.Core.Services
 
         // TODO: Good
         // Now: Key is command, value means is command require arguments
-        private readonly ImmutableDictionary<string, bool> _supportedCommands;
+        private readonly ImmutableList<ICommand> _supportedCommands;
 
         public CallbackQueryHandler(
-            BotMenu botMenu, 
+            BotMenu botMenu,
             ITelegramBotClient client,
             IActivityService activityService,
             ITelegramUserRepository userRepository)
         {
             _botMenu = botMenu;
-            _client  = client;
+            _client = client;
 
             _activityService = activityService;
 
             _userRepository = userRepository;
 
-            _supportedCommands = new Dictionary<string, bool>
+            var switchCommand = new SwitchCommand(
+                "switch", true, botMenu, client, activityService, userRepository);
+            var actionCommand = new ActionCommand(
+                "action", true, botMenu, client, activityService, userRepository);
+            
+            _supportedCommands = new List<ICommand>
             {
-                {"switch", true},
-                {"action", true},
-            }.ToImmutableDictionary();
+                switchCommand, actionCommand
+            }.ToImmutableList();
         }
 
         public async Task HandleCallbackQueryAsync(CallbackQuery callbackQuery)
@@ -57,51 +63,17 @@ namespace AR.Bot.Core.Services
             // [0] - command; [1] - arguments
             var parts = data.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-            var command = parts[0];
+            var commandName = parts[0];
             var args = parts.Length > 1 ? parts[1].Split('#') : null; // TODO: Good
 
-            // TODO: Refactor (Make Class and etc...)
-            var isSupportedCommand = _supportedCommands.TryGetValue(command, out var isRequiredArgs);
-            var isSupportedArgs = isRequiredArgs == (args != null);
-
-            if (!isSupportedCommand || !isSupportedArgs)
-                throw new UnsupportedCommand(callbackQuery.Data);
-
-            switch (command)
+            try
             {
-                case "switch" when args != null:
-                    var menuType = Type.GetType(args[0]);
-                    await _botMenu.SwitchMenu(menuType, args.Skip(1).ToArray(),
-                        callbackQuery.Message.Chat.Id,
-                        callbackQuery.Message.MessageId);
-                    break;
-                case "action" when args != null: // TODO: good?
-                    switch (args.First())
-                    {
-                        case "getRandomActivity":
-                            var user = await _userRepository.GetOrCreate(callbackQuery.Message.Chat.Id);
-                            // TODO: Check on null?
-                            var activity = await _activityService.GetRandomActivity(user.Id);
-                            if (activity == null)
-                            {
-                                await _client.SendTextMessageAsync(callbackQuery.Message.Chat.Id, "<b>Активности на сегодня закончились :(\nПриходите завтра</b>", replyToMessageId: callbackQuery.Message.MessageId);
-                            }
-                            else
-                            {
-                                var activityName = $"Активность: <b>{activity.Title}</b>\n";
-                                var description = $"\n{activity.Description}\n\n";
-                                var age = $"Возраст: {activity.MinAge}-{activity.MaxAge}\n";
-                                var skills = $"Развивает: {string.Join(',', activity.Skills.Select(e => e.Title))}\n"; // TODO: Ext
-
-                                await _client.SendTextMessageAsync(callbackQuery.Message.Chat.Id,
-                                    $"{activityName}{age}{skills}{description}",
-                                    replyToMessageId: callbackQuery.Message.MessageId,
-                                    parseMode: ParseMode.Html);
-                            }
-
-                            break;
-                    }
-                    break;
+                var command = _supportedCommands.First(c => c.Name == commandName);
+                await command.Execute(callbackQuery, args);
+            }
+            catch (InvalidOperationException)
+            {
+                throw new UnsupportedCommand(callbackQuery.Data);
             }
 
             await _client.AnswerCallbackQueryAsync(callbackQuery.Id);

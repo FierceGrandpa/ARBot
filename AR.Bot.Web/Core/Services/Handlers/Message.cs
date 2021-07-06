@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using AR.Bot.Core.Menu;
 using AR.Bot.Domain;
 using AR.Bot.Repositories;
-using AR.Bot.Web.Validation;
 using Serilog;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -142,10 +140,10 @@ namespace AR.Bot.Core.Services
             var (param, value) = (splitString[0], splitString[1]);
 
             if (!Enum.TryParse(param, true, out Setting setting) || !Enum.IsDefined(typeof(Setting), setting))
-                throw new InvalidSettingException();
+                throw new InvalidSettingException(setting);
 
             if (!_settingsProcessor.ValidateSettings(Enum.Parse<Setting>(param, true), value))
-                throw new InvalidSettingValueException();
+                throw new InvalidSettingValueException(value);
 
             switch (setting)
             {
