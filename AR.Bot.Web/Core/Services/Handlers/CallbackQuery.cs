@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using AR.Bot.Core.Menu;
+using AR.Bot.Domain;
 using AR.Bot.Repositories;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -29,13 +30,13 @@ namespace AR.Bot.Core.Services
         private readonly ImmutableDictionary<string, bool> _supportedCommands;
 
         public CallbackQueryHandler(
-            BotMenu botMenu, 
+            BotMenu botMenu,
             ITelegramBotClient client,
             IActivityService activityService,
             ITelegramUserRepository userRepository)
         {
             _botMenu = botMenu;
-            _client  = client;
+            _client = client;
 
             _activityService = activityService;
 
@@ -80,7 +81,28 @@ namespace AR.Bot.Core.Services
                     {
                         case "getRandomActivity":
                             var user = await _userRepository.GetOrCreate(callbackQuery.Message.Chat.Id);
-                            // TODO: Check on null?
+                            try
+                            {
+                                var activity = await _activityService.GetRandomActivity(user.Id);
+                                var activityName = $"Активность: <b>{activity.Title}</b>\n";
+                                var description = $"\n{activity.Description}\n\n";
+                                var age = $"Возраст: {activity.MinAge}-{activity.MaxAge}\n";
+                                var skills =
+                                    $"Развивает: {string.Join(',', activity.Skills.Select(e => e.Title))}\n"; // TODO: Ext
+
+                                await _client.SendTextMessageAsync(callbackQuery.Message.Chat.Id,
+                                    $"{activityName}{age}{skills}{description}",
+                                    replyToMessageId: callbackQuery.Message.MessageId,
+                                    parseMode: ParseMode.Html);
+                            }
+                            catch (RandomActivityException)
+                            {
+                                await _client.SendTextMessageAsync(callbackQuery.Message.Chat.Id,
+                                    "<b>Активности на сегодня закончились :(\nПриходите завтра</b>",
+                                    replyToMessageId: callbackQuery.Message.MessageId);
+                            }
+                            
+                            /*
                             var activity = await _activityService.GetRandomActivity(user.Id);
                             if (activity == null)
                             {
@@ -97,10 +119,11 @@ namespace AR.Bot.Core.Services
                                     $"{activityName}{age}{skills}{description}",
                                     replyToMessageId: callbackQuery.Message.MessageId,
                                     parseMode: ParseMode.Html);
-                            }
+                            }*/
 
                             break;
                     }
+
                     break;
             }
 

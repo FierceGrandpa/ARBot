@@ -64,18 +64,15 @@ namespace AR.Bot.Core.Services
 
         public async Task<Activity> GetRandomActivity(Guid userId)
         {
-            // TODO: This Bad?
             if (_dailyParcelService.GetTodayParcel(userId).Count() >= MaxActivities)
             {
-                // TODO: This Bad?
-                return null;
+                throw new RandomActivityException();
             }
 
             var activities = GetUnusedActivities(userId);
             if (activities == null)
             {
-                // TODO: This Bad...
-                return null;
+                throw new RandomActivityException();
             }
 
             // TODO: Optimize and MAKE OUT MAGIC, WOW!
